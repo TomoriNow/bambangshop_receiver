@@ -86,4 +86,29 @@ This is the place for you to write reflections:
 
 #### Reflection Subscriber-1
 
+- In this tutorial, we used RwLock<> to synchronise the use of Vec of Notifications. Explain why it is necessary for this case, and explain why we do not use Mutex<> instead?
+
+
+In this case, the use of `RwLock<Vec<Notification>>` is necessary to synchronize access to the shared vector of notifications across multiple threads. The RwLock allows for multiple readers or a single writer at any given time, providing concurrent read access while ensuring exclusive write access when modifying the vector. This is important because multiple threads may concurrently access the repository to add or retrieve notifications, and using RwLock ensures that data integrity is maintained. We do not use `Mutex<Vec<Notification>>` because it only allows for exclusive access at any given time, meaning that only one thread can access the data, whether it's for reading or writing. This would introduce unnecessary contention in scenarios where multiple threads may want to read notifications concurrently without needing to modify the underlying vector. RwLock allows for more efficient concurrent read access while still providing exclusive write access when needed, making it a better choice for this case.
+
+- In this tutorial, we used lazy_static external library to define Vec and DashMap as a “static” variable. Compared to Java where we can mutate the content of a static variable via a static function, why did not Rust allow us to do so?
+
+In Rust, the concept of mutability and ownership is enforced rigorously by the compiler to prevent data races and ensure thread safety. Rust's ownership model guarantees memory safety and concurrency without the need for a garbage collector. Static variables in Rust are immutable by default. This means that once a static variable is initialized, its content cannot be modified. This design choice aligns with Rust's focus on safety and prevents potentially unsafe concurrent access to static variables, which could lead to data races and undefined behavior. By disallowing mutation of static variables, Rust ensures that concurrent access to shared data is controlled through safe and explicit mechanisms such as locks (e.g., Mutex, RwLock) or atomic operations. This approach promotes safer and more predictable concurrent programming in Rust, without sacrificing performance or introducing unnecessary complexity.
+
+
 #### Reflection Subscriber-2
+
+- Have you explored things outside of the steps in the tutorial, for example: src/lib.rs? If not, explain why you did not do so. If yes, explain things that you have learned from those other parts of code.
+
+Yes, I have. In lib.rs, the foundational components for the Receiver application in Bambangshop are established. This includes static configuration, HTTP client setup, error handling, and response construction. The code initializes static instances of the reqwest client and the application configuration, enabling global access throughout the application. Additionally, custom error handling logic is defined to construct error responses with HTTP status codes and messages, enhancing the robustness of the application. On the other hand, in main.rs, the Rocket web framework is set up to handle HTTP requests and manage application state. This file serves as the entry point for the Receiver application. Inside the rocket() function, Rocket's build() method initializes the Rocket instance, attaches the reqwest client as managed state, and sets up route stages for handling incoming requests. The Rocket instance is then returned from the function, establishing the foundation for the application's web server functionality.
+
+
+- Since you have completed the tutorial by now and have tried to test your notification system by spawning multiple instances of Receiver, explain how Observer pattern eases you to plug in more subscribers. How about spawning more than one instance of Main app, will it still be easy enough to add to the system?
+
+
+The Observer pattern facilitates the addition of more subscribers in a flexible and scalable manner. Each subscriber registers with the publisher to receive updates, decoupling the publisher from its subscribers. This means that adding new subscribers to the system does not require modifications to the publisher's code. Instead, new subscriber instances can be created and registered independently, seamlessly integrating with the existing system. Similarly, spawning more than one instance of the main application does not pose significant challenges when adding new subscribers. Each instance of the main application operates independently, managing its set of subscribers and handling incoming notifications. New subscribers can be added to any instance of the main application without affecting the operation of other instances. This scalability allows the system to accommodate additional subscribers and instances with ease, ensuring flexibility and maintainability as the system grows.
+
+
+- Have you tried to make your own Tests, or enhance documentation on your Postman collection? If you have tried those features, tell us whether it is useful for your work (it can be your tutorial work or your Group Project).
+
+Yes, it is helpful and useful for my work since creating our own Tests and enhancing the documentation on my Postman collection allows me to ensure good code coverage and test all happy and unhappy paths. This results in observing how well our implementation is made, and also seeing if particular use cases (or even edge cases) are correctly handled by the program.
